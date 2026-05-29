@@ -1,10 +1,33 @@
 
 const overlay = document.querySelector("#overlay")
 
-overlay.addEventListener("mousemove", spotlight);
-// export function startSpotlight() {
-// }
+const clickTorch = document.createElement("div");
 
+const darkText = document.getElementById("dark");
+const lightText = document.getElementById("light");
+
+darkText.style.display = "none";
+lightText.style.display = "none";
+
+var isOff = false
+
+clickTorch.style.borderRadius = "50%";
+clickTorch.style.position = "absolute";
+clickTorch.style.top = "17.5%";
+clickTorch.style.left = "65px";
+clickTorch.style.height = "275px";
+clickTorch.style.width = "275px";
+clickTorch.style.cursor = "pointer";
+
+var gone = false;
+
+clickTorch.addEventListener("click", () => {
+    overlay.addEventListener("mousemove", spotlight);
+    gone = true;
+    clickTorch.remove()
+})
+
+overlay.appendChild(clickTorch)
 
 var xPos = 0
 var yPos = 0
@@ -12,27 +35,59 @@ var yPos = 0
 var disabled = false;
 
 function spotlight(event) {
-    if (disabled) {
-        return;   
-    }
 
     const clientX = event.clientX || event.touches[0].clientX;
     const clientY = event.clientY || event.touches[0].clientY;
-
 
     setTimeout(() => {
         overlay.style.background  = `radial-gradient(circle at ${clientX}px ${clientY}px, #00000000 10px, #000000 150px)`;
     }, 100);
 }
 
+const lightSwitch = document.createElement("div");
+
+lightSwitch.style.borderRadius = "50%";
+lightSwitch.style.position = "fixed";
+lightSwitch.style.top = "75px";
+lightSwitch.style.left = "1100px";
+lightSwitch.style.height = "275px";
+lightSwitch.style.width = "275px";
+lightSwitch.style.filter = "blur(5px)";
+lightSwitch.style.background = "#c6dfffa8";
+lightSwitch.style.boxShadow = "0px 0px 75px #c6dfff";
+lightSwitch.style.display = "none";
+lightSwitch.style.cursor = "pointer";
+lightSwitch.style.zIndex = "1";
+
+
+lightSwitch.addEventListener("click", () => {
+
+    if (isOff != true) {
+        isOff = true
+        overlay.style.animation = "exit 1s ease forwards";
+        lightSwitch.style.animation = "sun 1s ease forwards";
+        darkText.style.display = "none";
+        lightText.style.display = "block";
+        overlay.removeEventListener("mousemove", spotlight);
+    } else {
+        isOff = false
+        overlay.style.animation = "enter 1s ease forwards";
+        lightSwitch.style.animation = "moon 1s ease forwards";
+        darkText.style.display = "block";
+        lightText.style.display = "none";
+        overlay.addEventListener("mousemove", spotlight);
+    }
+})
+
+document.body.appendChild(lightSwitch);
 
 var isOnCooldown = false;
 
 class Node {
   constructor(prev, next, elem) {
     this.elem = elem;
-    this.next = next; // Pointer to next node
-    this.prev = prev; // Pointer to previous node
+    this.next = next;
+    this.prev = prev;
   }
 }
 
@@ -56,8 +111,13 @@ p1.next = p3;
 
 p3.prev = p1;
 
+var prev = null;
+
 window.addEventListener("wheel", (event) => {
     event.preventDefault();
+
+    prev = currWindow.elem
+
     if (isOnCooldown) return;
 
     isOnCooldown = true;
@@ -71,16 +131,44 @@ window.addEventListener("wheel", (event) => {
 
     if (currWindow.elem == p3.elem) {
         overlay.style.animation = "exit 1s ease forwards";
-        overlay.style.background = `transparent 100%`;
         overlay.removeEventListener("mousemove", spotlight);
+        isOff = true;
+    } else if ((prev == p3.elem && currWindow != p3.elem) || (currWindow.elem == p0.elem && isOff == true)) {
+        overlay.style.animation = "enter 1s ease forwards";
+        overlay.addEventListener("mousemove", spotlight);
+        isOff = false;
+    }
+
+    if (prev == p0.elem && gone == false) {
+        gone = true;
+        clickTorch.remove();
+        overlay.addEventListener("mousemove", spotlight);
+        lightText.style.display = "none";
+    }
+    
+    if (currWindow.elem == p1.elem) {
+        lightSwitch.style.animation = "switch-enter 1s ease forwards";
+        lightSwitch.style.display = "block";
+        darkText.style.display = "block";
+
+        isOff = false;
+    } else if (currWindow.elem == p0.elem) {
+        lightSwitch.style.animation = "moon 1s ease forwards";
+        lightSwitch.style.display = "none";
+        darkText.style.display = "none";
+        lightText.style.display = "none";
+        isOff = true;
     } else {
-        overlay.style.animation = "none";
-        overlay.addEventListener("mousemove", spotlight)
+        lightSwitch.style.animation = "switch-exit 1s ease forwards";
+        lightSwitch.style.display = "none";
+        darkText.style.display = "none";
+        lightText.style.display = "none";
+        isOff = true;
     }
 
     currWindow.elem.scrollIntoView({ behavior: 'smooth' });
 
     setTimeout(() => {
-        isOnCooldown = false; // Reset after 2 seconds
+        isOnCooldown = false;
     }, 100);
 }, {passive : false});

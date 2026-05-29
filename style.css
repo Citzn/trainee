@@ -19,10 +19,14 @@ li {
     width: 100%;
     height: 100%;
     height: 1200px;
-    background: radial-gradient(circle at 200px 350px,  #00000000 10px, #e8a65a1c 75px, #000000 150px);
+    background-image: radial-gradient(circle at 200px 350px, #00000000 10px, #000000 150px);
 }
 
-#welcome, #about-me-section, #motivation-section, #fun-facts-section {
+#overlay > .section-inner {
+    display: none;
+}
+
+#overlay, #welcome, #about-me-section, #motivation-section, #fun-facts-section {
     height: 1200px;
     display: flex;
     flex-direction: column;
@@ -38,8 +42,67 @@ li {
     font-size: 100px;
 }
 
-#about-me-container {
+.section-inner {
     width: 40%;
-    overflow: hidden;
 }
 
+#dark {
+    z-index: 5;
+    color: #FFF
+}
+
+.section-inner {
+    margin-top: 20%;
+}
+
+@keyframes enter {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes exit {
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes switch-enter {
+  100% {
+    display: block;
+  }
+}
+
+@keyframes switch-exit {
+  0% {
+    display: block;
+  }
+  100% {
+    display: none;
+  }
+}
+
+@keyframes sun {
+  0% {
+    background: #c6dfffa8;
+    box-shadow: 0px 0px 75px #c6dfff;
+  }
+  100% {
+    background: #ee901d;
+    box-shadow: 0px 0px 75px #ffc681;
+  }
+}
+
+@keyframes moon {
+  0% {
+    background: #ee901d;
+    box-shadow: 0px 0px 75px #ffc681;
+  }
+  100% {
+    background: #c6dfffa8;
+    box-shadow: 0px 0px 75px #c6dfff;
+  }
+}
